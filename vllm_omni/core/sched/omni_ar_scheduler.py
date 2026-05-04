@@ -496,21 +496,19 @@ class OmniARScheduler(OmniSchedulerMixin, VLLMScheduler):
 
         # [Omni] Cleanup state for finished requests
         for req in stopped_running_reqs:
-            if req.request_id not in self.waiting_for_transfer_free:
-                if req.request_id in self.transfer_triggered_requests:
-                    self.transfer_triggered_requests.remove(req.request_id)
-                if req.request_id in self.active_kv_transfers:
-                    self.active_kv_transfers.remove(req.request_id)
-                self.pending_stop_after_extraction.discard(req.request_id)
+            rid = req.request_id
+            if rid not in self.waiting_for_transfer_free:
+                self.transfer_triggered_requests.discard(rid)
+                self.active_kv_transfers.discard(rid)
+                self.pending_stop_after_extraction.discard(rid)
 
         # Same for preempted
         for req in stopped_preempted_reqs:
-            if req.request_id not in self.waiting_for_transfer_free:
-                if req.request_id in self.transfer_triggered_requests:
-                    self.transfer_triggered_requests.remove(req.request_id)
-                if req.request_id in self.active_kv_transfers:
-                    self.active_kv_transfers.remove(req.request_id)
-                self.pending_stop_after_extraction.discard(req.request_id)
+            rid = req.request_id
+            if rid not in self.waiting_for_transfer_free:
+                self.transfer_triggered_requests.discard(rid)
+                self.active_kv_transfers.discard(rid)
+                self.pending_stop_after_extraction.discard(rid)
 
         # KV Connector: update state for finished KV Transfers.
         if kv_connector_output:
